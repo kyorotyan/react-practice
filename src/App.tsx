@@ -52,9 +52,32 @@ function App() {
   };
 
   const handleDelete = (id: number) => {
-    const newTodos = todos.filter((todo) => todo.id != id);
+    const newTodos = todos.filter((todo) => todo.id !== id);
     setTodos(newTodos);
   };
+
+  const printHelloWorld = () => {
+    const fetchTodoUrl = 'https://jsonplaceholder.typicode.com/todos/' + (todos.length + 1);
+    fetch(fetchTodoUrl, {
+      method: 'GET',
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          return Promise.resolve(response.json());
+        }
+        return Promise.reject();
+      })
+      .then((json) => {
+        const newTodo: Todo = {
+          inputvalue: json!.title,
+          id: todos.length,
+          checked: json!.completed,
+        }
+    
+        setTodos([newTodo, ...todos]);
+      });
+  };
+
 
 
   return (
@@ -65,6 +88,7 @@ function App() {
           <input type='text' value={inputvalue} onChange={(e) => handleChange(e)} className="inputText"/>
           <input type='submit' value='作成' className='submitButton' />
        </form>
+       <button onClick={() => printHelloWorld()}>fetch</button>
        <ul className='todoList'>
          {todos.map((todo) => (
           <li key={todo.id}>
